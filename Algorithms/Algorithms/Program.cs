@@ -47,7 +47,7 @@ namespace Lesson1
                 }
             }
 
-            Console.WriteLine($"Задание 14*: выводим автоморфные числа ({listForPrint.Count} шт.), не превосходящие {N}:");
+            Console.WriteLine($"Задание 14*: выводим все автоморфные числа ({listForPrint.Count} шт.), не превосходящие {N}:");
             listForPrint.Sort();
             foreach (var item in listForPrint)
             {
@@ -71,13 +71,25 @@ namespace Lesson1
             a = dateTime.Millisecond % 1000 /10;
             x = dateTime.Second;
             int modulus = 100;
+            int temp1 = -1, temp2 = -1, temp3 = -1;
 
             Console.WriteLine("\n\nЗадание 13* b): Случайные числа без использованием стандартной функции rand():");
             for (int i = 0; i < modulus; i++)
             {
-                x = (a * x + b + b * i)  % m;
-                if (i == 0) { temp = x; }
-                else if (x == temp) { x = (dateTime.Millisecond % 10 * i * 3) % m; }
+                x = (a * x + b + i*i) % m;
+
+                if (i == 0) { temp1 = x; }
+                else if (i == 1) { temp2 = x; }
+                else if (x == temp1) { temp3 = i; }
+                else if (x == temp2 && i == ++temp3)
+                {
+                    x = (dateTime.Millisecond % 10 * i * b + a) % m;
+                    b = x + a;
+                    a = b * x;
+                    temp1 = x;
+                    temp3 = -2;
+                }
+                else if (temp3 == -2) { temp2 = x; temp3 = -1; }
                 Console.Write($"{x++} ");
             }
 
@@ -108,7 +120,7 @@ namespace Lesson1
                 else { poweredNumber = (decimal)Math.Pow(upgradeNumber, power); }
                 lastDigitsOfPoweredNumber = 
                     ulong.Parse(poweredNumber.ToString("0").Substring(poweredNumber.ToString("0").Length - numberOfDigits));
-                if (CompareDigits((ulong)lastDigitsOfPoweredNumber, upgradeNumber))
+                if (lastDigitsOfPoweredNumber == upgradeNumber)
                 {   return i;   }
             }
             return -1;
