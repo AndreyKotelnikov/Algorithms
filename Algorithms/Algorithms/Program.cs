@@ -53,7 +53,35 @@ namespace Lesson1
             {
                 Console.Write($"{item} ");
             }
-            
+
+            //13. * Написать функцию, генерирующую случайное число от 1 до 100: 
+            //a.С использованием стандартной функции rand().
+            Random rand = new Random();
+            Console.WriteLine("\n\nЗадание 13* а): Случайные числа с использованием стандартной функции rand():");
+            for (int i = 0; i < 100; i++)
+            {
+                Console.Write($"{rand.Next(1, 101)} ");
+            }
+
+            //b.Без использования стандартной функции rand().
+            DateTime dateTime = DateTime.Now;
+            int x, a, b, m;
+            m = 100; // Вершина последовательности
+            b = dateTime.Millisecond % 100;
+            a = dateTime.Millisecond % 1000 /10;
+            x = dateTime.Second;
+            int modulus = 100;
+
+            Console.WriteLine("\n\nЗадание 13* b): Случайные числа без использованием стандартной функции rand():");
+            for (int i = 0; i < modulus; i++)
+            {
+                x = (a * x + b + b * i)  % m;
+                if (i == 0) { temp = x; }
+                else if (x == temp) { x = (dateTime.Millisecond % 10 * i * 3) % m; }
+                Console.Write($"{x++} ");
+            }
+
+            Console.WriteLine("\n\nОстальные задачи очень простые - реализация понятна и выполнялись мною раньше в других программах");
 
             Console.ReadKey();
 
