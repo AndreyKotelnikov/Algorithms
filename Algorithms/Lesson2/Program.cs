@@ -92,11 +92,102 @@ namespace Lesson2
             countOp = 0;
             Console.WriteLine("\nb. *С использованием рекурсии:");
             Console.WriteLine($"{CulcRecursion(3, 20, 1, 2)} (кол-во операций = {countOp})");
-
+        
+            //4. **Найти все возможные способы разбиения N человек на M команд. Команды могут быть пустыми.
+            //DivisionBy2Commands(3, 2);
+            Console.WriteLine("\n\n4. **Найти все возможные способы разбиения N человек на M команд. Команды могут быть пустыми.");
+            int N = 4;
+            int M = 3;
+            Console.WriteLine($"Выводим разбиение {N} человек по {M} командам:");
+            countOp = 0;
+            DivisionByCommands(4, 3);
+            Console.WriteLine($"\nВсего получилось комбинаций: {countOp}");
+            //Console.WriteLine(0<<3);
 
             Console.ReadKey();
         }
-        
+
+        //Функция, которая рекурсией считает все возможные комбинации разбиения N человек на M команд.
+        public static void DivisionByCommands(int people, int command, int thisCommand = 0, int previousCommands = 0, int combination = -1)
+        {
+            if (thisCommand == 1) { countOp++; }  //Считаем кол-во комбинаций, которые выводятся на экран
+            if (combination == -1) { thisCommand = command; }  //Заполняем поле thisCommand при первом запуске функции
+            
+            //Определяем лимит комбинаций, который нам доступен, с учётом данных по другим командам
+            int limit = 0;
+            int temp = previousCommands;
+            while (temp != 0)
+            {
+                temp = temp >> people;
+                limit += temp % (1 << people); 
+            }
+
+            if (thisCommand == 1) //Если это последняя команда, то переходим к выводу на экран нашей комбинации
+            {
+                //Сначала в поле кладём комбинацию из последней команды, которая должна заполнить все битовые нули, 
+                //оставшиеся от других команд. 
+                //Пример: из предыдущих команд у нас получился лимит 5, что означает в бинарной системе 101,
+                //поэтому нам нужно заполнить средний 0 единицей: в бинарной системе это 10, а в десятеричной число 2.
+                combination = (1 << people) - 1 - limit;
+                temp = previousCommands;
+                while (command > 0)
+                {
+                    for (int i = people - 1; i >= 0; i--)
+                    {
+                        //Проверяем включеность каждого бита и подставляем его номер позиции в бинарной системе исчисления или ноль.
+                        if (((combination >> i) & 1) == 1) { Console.Write(people - i); }
+                        else { Console.Write(0); }
+                    }
+                    Console.Write("  ");
+                    temp = temp >> people;
+                    combination = temp % (1 << people); //Получаем значение игроков из предыдущей команды
+                    command--;
+                }
+                Console.WriteLine();
+                return;
+            }
+            
+            //Исключаем из прохода комбинации, которые были уже использованы в предыдущих командах, накладываю маску лимита
+            //Например: лимит = 5 (в двоичной: 101), а комбинация = 1 (в двоичной: 001). При логическом "и" получится 001.
+            //Ноль получится только если комбинация будет равна 010 или 000 в двоичной системе.
+            while ((combination & limit) != 0) { combination++; }
+
+            //Если комбинация превышает количество возможных переборов с учётом ограничений по предыдущим командам, 
+            //то выходим из этого вызова функции.
+            if (combination > (1 << people) - 1 - limit) { return; }
+
+            //Делаем новый вызов функции со следующей возможной комбинацией в этой же команде
+            DivisionByCommands(people, command, thisCommand, previousCommands, combination + 1);
+
+            //Проверяем, что это не первый запуск функции
+            //И делаем новый вызов функции с передачей предыдущих комбинаций и текущей комбинаций в следующую команду.
+            if (combination >= 0)
+            {
+                DivisionByCommands(people, command, thisCommand - 1, (previousCommands + combination) << people, 0);
+            }
+            return;
+        }
+
+        //Старая версия рекурсии, которая работает только на 2-х командах... - кладбище моих функций, которые не взлетели ))
+        public static int DivisionBy2Commands(int people, int command, int limit = -1)
+        {
+            if (command == 1) { limit = (1 << people) -2 - limit; }
+            if (limit != -1)
+            {
+                Console.SetCursorPosition((command - 1) * people + (command - 1) * 2, ((1 << people) - 1) * (command % 2) + ((command + 1) % 2) * limit - (command % 2) * limit);
+                //Console.WriteLine();
+                //Console.Write($"{command} ");
+                for (int i = people - 1; i >= 0; i--)
+                {
+                    if (((limit >> i) & 1) == 1) { Console.Write(people - i); }
+                    else { Console.Write(0); }
+                }
+            }
+            if (command == 1) { return 0; }
+            if (limit == (1 << people) - 1) { return 0;  }
+            return DivisionBy2Commands(people, command, limit + 1) + DivisionBy2Commands(people, command - 1, limit);
+        }
+
         public static int ConvertToBinaryRecursion(int number)
         {
             countOp++;
