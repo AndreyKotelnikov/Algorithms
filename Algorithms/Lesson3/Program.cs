@@ -19,8 +19,8 @@ namespace Lesson3
             //Написать функции сортировки, которые возвращают количество операций.
 
             //Создаём массив и заполняем его случайными числами
-            const int N = 10;
-            const bool print = true;
+            const int N = 10000;
+            const bool print = false;
             int[] arr = new int[N];
             Random rand = new Random(N);
             DateTime start, finish;
@@ -56,7 +56,7 @@ namespace Lesson3
             if (print) { Print(arr); }
 
             //2. *Реализовать шейкерную сортировку
-            Console.WriteLine("\n\nДелаем шейкерную сортировку:");
+            Console.WriteLine("\n\n2. *Делаем шейкерную сортировку:");
             arr = etalon.Clone() as int[];
             start = DateTime.Now;
             SortShaker(ref arr);
@@ -65,8 +65,46 @@ namespace Lesson3
                 $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
             if (print) { Print(arr); }
 
+            //3. Реализовать бинарный алгоритм поиска в виде функции, которой передаётся отсортированный массив. 
+            //Функция возвращает индекс найденного элемента или –1, если элемент не найден.
+            Console.WriteLine("\n\n3. Реализовать бинарный алгоритм поиска в виде функции, которой передаётся отсортированный массив. " +
+                "\nФункция возвращает индекс найденного элемента или –1, если элемент не найден.");
+            Console.WriteLine("Передаём массив, отсортированный на предыдущем этапе" +
+                $"\nИщем первое включение элемента {arr[N - 2]}");
+            int index = -2;
+            start = DateTime.Now;
+            index = BinarySearch(arr[N - 2], ref arr);
+            finish = DateTime.Now;
+            Console.WriteLine($"Выводим найденный индекс(кол-во перемещений указателя = {countOp}, " +
+                $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
+            Console.WriteLine(index);
+
+            Console.WriteLine("\nТеперь ищем элемент, которого нет в массиве: -10");
+            start = DateTime.Now;
+            index = BinarySearch(-10, ref arr);
+            finish = DateTime.Now;
+            Console.WriteLine($"Выводим найденный индекс(кол-во перемещений указателя = {countOp}, " +
+                $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
+            Console.WriteLine(index);
 
             Console.ReadKey();
+        }
+
+        public static int BinarySearch(int item, ref int[] arr)
+        {
+            countOp = 0;
+            int L = 0;
+            int R = arr.Length - 1;
+            int index;
+            while (L != R)
+            {
+                countOp++;
+                index = L + (R - L) / 2;
+                if (arr[index] == item) { return index; }
+                if (arr[index] > item) { R = index - 1; }
+                else { L = index + 1; }
+            }
+            return -1;
         }
 
         public static void SortShaker(ref int[] arr)
