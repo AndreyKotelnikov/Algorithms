@@ -45,7 +45,7 @@ namespace Lesson3
             if (print) { Print(arr); }
 
             //Оптимизируем алгоритм
-            Console.WriteLine("\nЗапускаем оптимизированный алгоритм пузырьков...");
+            Console.WriteLine("\n\nЗапускаем оптимизированный алгоритм пузырьков...");
             arr = etalon.Clone() as int[];
             if (print) { Print(arr); }
             start = DateTime.Now;
@@ -56,7 +56,7 @@ namespace Lesson3
             if (print) { Print(arr); }
 
             //2. *Реализовать шейкерную сортировку
-            Console.WriteLine("\nДелаем шейкерную сортировку:");
+            Console.WriteLine("\n\nДелаем шейкерную сортировку:");
             arr = etalon.Clone() as int[];
             start = DateTime.Now;
             SortShaker(ref arr);
@@ -74,20 +74,29 @@ namespace Lesson3
             countOp = 0;
             countSwap = 0;
             int flagSwap = 0;
-            int indexJampDown = 0;
-            int indexJampUp = 0;
-            int count = 0;
             for (int i = 0; i < arr.Length; i++)
             {
                 countOp++;
-                for (int j = indexJampUp + 1; j < arr.Length - count; j++)
+                for (int j = i + 1; j < arr.Length - i; j++)
                 {
                     countOp++;
                     if (arr[j - 1] > arr[j])
                     {
                         countSwap++; arr[j - 1] ^= arr[j]; arr[j] ^= arr[j - 1]; arr[j - 1] ^= arr[j];
+                        flagSwap = 1;
                     }
                 }
+                if (flagSwap == 0) { break; } else { flagSwap = 0; }
+                for (int j = arr.Length - 2 - i; j > i; j--)
+                {
+                    countOp++;
+                    if (arr[j - 1] > arr[j])
+                    {
+                        countSwap++; arr[j - 1] ^= arr[j]; arr[j] ^= arr[j - 1]; arr[j - 1] ^= arr[j];
+                        flagSwap = 1;
+                    }
+                }
+                if (flagSwap == 0) { break; } else { flagSwap = 0; }
             }
         }
 
