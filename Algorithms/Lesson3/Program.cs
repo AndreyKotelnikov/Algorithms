@@ -42,6 +42,8 @@ namespace Lesson3
                 "\nНаписать функции сортировки, которые возвращают количество операций.");
             Console.WriteLine($"\nВыводим отсортированный массив(кол-во перемещений указателя = {countOp}, кол-во свопов = {countSwap}, " +
                 $" время миллисекунд = {(finish - start).TotalMilliseconds}):");
+            Console.WriteLine($"Асимптотическая сложность алгоритма = N^2 -> O(N^2), max кол-во перемещений указателя = {N * N}" +
+                $"\nАлгоритм на текущих данных отработал на {N * N - countOp} операций меньше");
             if (print) { Print(arr); }
 
             //Оптимизируем алгоритм
@@ -53,6 +55,8 @@ namespace Lesson3
             finish = DateTime.Now;
             Console.WriteLine($"\nВыводим отсортированный массив(кол-во перемещений указателя = {countOp}, кол-во свопов = {countSwap}, " +
                 $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
+            Console.WriteLine($"Асимптотическая сложность алгоритма = N^2/2 + 2*N/5-> O(N^2), max кол-во перемещений указателя = {N * N / 2 + 2 * N / 5}" +
+                $"\nАлгоритм на текущих данных отработал на {N * N / 2 + 2 * N / 5 - countOp} операций меньше");
             if (print) { Print(arr); }
 
             //2. *Реализовать шейкерную сортировку
@@ -63,6 +67,8 @@ namespace Lesson3
             finish = DateTime.Now;
             Console.WriteLine($"Выводим отсортированный массив(кол-во перемещений указателя = {countOp}, кол-во свопов = {countSwap}, " +
                 $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
+            Console.WriteLine($"Асимптотическая сложность алгоритма = N^2/2 -> O(N^2), max кол-во перемещений указателя = {N * N / 2}" +
+                $"\nАлгоритм на текущих данных отработал на {N * N / 2 - countOp} операций меньше");                                    
             if (print) { Print(arr); }
 
             //3. Реализовать бинарный алгоритм поиска в виде функции, которой передаётся отсортированный массив. 
@@ -78,6 +84,8 @@ namespace Lesson3
             Console.WriteLine($"Выводим найденный индекс(кол-во перемещений указателя = {countOp}, " +
                 $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
             Console.WriteLine(index);
+            Console.WriteLine($"Асимптотическая сложность алгоритма поиска = Log2(N) -> O(Log2(N)), max кол-во перемещений указателя = {(int)Math.Log(N, 2)}" +
+                $"\nАлгоритм на текущих данных отработал на {(int)Math.Log(N, 2) - countOp} операций меньше");
 
             Console.WriteLine("\nТеперь ищем элемент, которого нет в массиве: -10");
             start = DateTime.Now;
@@ -86,6 +94,8 @@ namespace Lesson3
             Console.WriteLine($"Выводим найденный индекс(кол-во перемещений указателя = {countOp}, " +
                 $"время миллисекунд = {(finish - start).TotalMilliseconds}):");
             Console.WriteLine(index);
+
+            //4. *Подсчитать количество операций для каждой из сортировок и сравнить его с асимптотической сложностью алгоритма.
 
             Console.ReadKey();
         }
