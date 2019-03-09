@@ -65,42 +65,31 @@ namespace Lesson2
             int endNumber = 20;
             int increment = 1;
             int multiple = 2;
-            int count = 0;
-            list.Add(startNumber);
-            while (count == 0)
-            {
-                count = list.Count;
-                for (int i = 0; i < count; i++)
-                {
-                    countOp++;
-                    if (list[i] < endNumber) { list.Add(list[i] * multiple); count = 0; }
-                    if (list[i] < endNumber) { list[i] += increment; count = 0; } 
-                    if (list[i] > endNumber) { list.RemoveAt(i); }
-                    if (list[list.Count - 1] > endNumber) { list.RemoveAt(list.Count - 1); }
-                }
-            }
-            count = 0;
-            foreach (var item in list)
+            int[] arr = new int[endNumber + 1];
+            arr[startNumber] = 1;
+            for (int i = startNumber + 1; i < arr.Length; i++)
             {
                 countOp++;
-                if (item == endNumber) { count++;   }
+                if (i % multiple == 0) { arr[i] = arr[i - increment] + arr[i / multiple]; }
+                else { arr[i] = arr[i - increment]; }
             }
+
             Console.WriteLine("\nа.С использованием массива:");
-            Console.WriteLine($"{count} (кол-во операций = {countOp})");
+            Console.WriteLine($"{arr[endNumber]} (кол-во операций = {countOp})");
 
             //b. * С использованием рекурсии.
             countOp = 0;
             Console.WriteLine("\nb. *С использованием рекурсии:");
             Console.WriteLine($"{CulcRecursion(3, 20, 1, 2)} (кол-во операций = {countOp})");
-        
+
             //4. **Найти все возможные способы разбиения N человек на M команд. Команды могут быть пустыми.
             //DivisionBy2Commands(3, 2);
             Console.WriteLine("\n\n4. **Найти все возможные способы разбиения N человек на M команд. Команды могут быть пустыми.");
-            int N = 4;
-            int M = 3;
+            int N = 7;
+            int M = 7;
             Console.WriteLine($"Выводим разбиение {N} человек по {M} командам:");
             countOp = 0;
-            DivisionByCommands(4, 3);
+            DivisionByCommands(N, M, print: false);
             Console.WriteLine($"\nВсего получилось комбинаций: {countOp}");
             //Console.WriteLine(0<<3);
 
@@ -108,11 +97,13 @@ namespace Lesson2
         }
 
         //Функция, которая рекурсией считает все возможные комбинации разбиения N человек на M команд.
-        public static void DivisionByCommands(int people, int command, int thisCommand = 0, int previousCommands = 0, int combination = -1)
+        public static void DivisionByCommands(int people, int command, int thisCommand = 0, int previousCommands = 0, int combination = -1, bool print = true)
         {
-            if (thisCommand == 1) { countOp++; }  //Считаем кол-во комбинаций, которые выводятся на экран
+            if (people < 1) { return; }
             if (combination == -1) { thisCommand = command; }  //Заполняем поле thisCommand при первом запуске функции
-            
+            if (thisCommand == 1) { countOp++; }  //Считаем кол-во комбинаций, которые выводятся на экран
+            if (!print && thisCommand == 1) { return; }
+
             //Определяем лимит комбинаций, который нам доступен, с учётом данных по другим командам
             int limit = 0;
             int temp = previousCommands;
@@ -122,7 +113,7 @@ namespace Lesson2
                 limit += temp % (1 << people); 
             }
 
-            if (thisCommand == 1) //Если это последняя команда, то переходим к выводу на экран нашей комбинации
+            if (thisCommand <= 1) //Если это последняя команда, то переходим к выводу на экран нашей комбинации
             {
                 //Сначала в поле кладём комбинацию из последней команды, которая должна заполнить все битовые нули, 
                 //оставшиеся от других команд. 
@@ -157,13 +148,13 @@ namespace Lesson2
             if (combination > (1 << people) - 1 - limit) { return; }
 
             //Делаем новый вызов функции со следующей возможной комбинацией в этой же команде
-            DivisionByCommands(people, command, thisCommand, previousCommands, combination + 1);
+            DivisionByCommands(people, command, thisCommand, previousCommands, combination + 1, print);
 
             //Проверяем, что это не первый запуск функции
             //И делаем новый вызов функции с передачей предыдущих комбинаций и текущей комбинаций в следующую команду.
             if (combination >= 0)
             {
-                DivisionByCommands(people, command, thisCommand - 1, (previousCommands + combination) << people, 0);
+                DivisionByCommands(people, command, thisCommand - 1, (previousCommands + combination) << people, 0, print);
             }
             return;
         }
@@ -212,9 +203,11 @@ namespace Lesson2
         public static int PowerRecursionEven(int number, int power)
         {
             countOp++;
-            if (power < 2) { return number; }
-            return PowerRecursion(number, (power - power % 2) / 2) * PowerRecursion(number, (power - power % 2) / 2) 
-                * number / (power % 2 == 0 ? number : 1);
+            if (number == 0) { return 0; }
+            if (power == 0) { return 1; }
+            if (power == 1) { return number; }
+            if (power % 2 == 0) { return PowerRecursionEven(number * number, power / 2); }
+            else { return number * PowerRecursionEven(number * number, power / 2); }
         }
 
         public static int CulcRecursion(int startNumber, int endNumber, int increment, int multipler)
