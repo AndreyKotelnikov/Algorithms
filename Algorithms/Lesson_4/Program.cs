@@ -113,7 +113,56 @@ namespace Lesson_4
             Console.WriteLine($"\nЧерез матрицу: Максимальная длина последовательности = {matrix[matrix.GetLength(0) - 1, matrix.GetLength(1) - 1]}");
             Console.WriteLine($"Через матрицу: Количество операций = {countOp}");
 
+            //1. * Количество маршрутов с препятствиями.Реализовать чтение массива с препятствием и нахождение количество маршрутов.
+            //Карта 3x3 для примера:
+            //1 1 1
+            //0 1 0
+            //0 1 0
+            int[,] map =
+            {
+                {1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 0, 1, 1, 1, 1, 1},
+                {1, 1, 0, 1, 1, 1, 1, 1},
+                {1, 1, 0, 1, 1, 1, 1, 1},
+                {1, 1, 0, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1}
+            };
+            int[,] result = new int[map.GetLength(1), map.GetLength(0)];
+            for (int i = 0; i < map.GetLength(1); i++)
+            {
+                for (int j = 0; j < map.GetLength(0); j++)
+                {
+                    if (map[i, j] == 0) { continue; }
+                    else
+                    {
+                        result[i, j] = result[i - 1 >= 0 ? i - 1 : 0, j] + result[i, j - 1 >= 0 ? j - 1 : 0];
+                        if (result[i, j] == 0) { result[i, j]++; }
+                    }
+                    
+                }
+            }
+            Console.WriteLine("\n1. * Количество маршрутов с препятствиями." +
+                "\nРеализовать чтение массива с препятствием и нахождение количество маршрутов.");
+            Console.WriteLine("Карта:");
+            Print(map);
+            Console.WriteLine("\nМатрица решений:");
+            Print(result);
+
             Console.ReadKey();
+        }
+
+        private static void Print(int[,] arr)
+        {
+            for (int i = 0; i < arr.GetLength(1); i++)
+            {
+                for (int j = 0; j < arr.GetLength(0); j++)
+                {
+                    Console.Write($"{arr[i, j], 4} ");
+                }
+                Console.WriteLine();
+            }
         }
 
         private static void Print(int[] arr)
