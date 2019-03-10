@@ -50,7 +50,94 @@ namespace Lesson_4
             DateTime finish = DateTime.Now;
             Console.WriteLine($"Время работы алгоритма в секундах {(finish - start).TotalSeconds}");
             Console.WriteLine($"Время работы алгоритма в миллиxсекундах {(finish - start).TotalMilliseconds}");
+
+            //2. Решить задачу о нахождении длины максимальной подпоследовательности с помощью матрицы.
+            countOp = 0;
+            int[] arr1 = { 5, 0, 0, 3, 0, 0, 5 };
+            int[] arr2 = { 5, 6, 3, 8, 7, 3, 9, 2, 5 };
+            int[,] matrix = new int[arr1.Length, arr2.Length];
+            int max = MaxSequenceRecursion(ref arr1, ref arr2);
+            Console.WriteLine($"\n2. Решить задачу о нахождении длины максимальной подпоследовательности с помощью матрицы.");
+            Print(arr1); Console.WriteLine();
+            Print(arr2); Console.WriteLine();
+            Console.WriteLine($"Через рекурсию: Максимальная длина последовательности = {max}");
+            Console.WriteLine($"Через рекурсию: Количество операций = {countOp}");
+
+            Console.WriteLine($"\n\nТеперь решаем через матрицу");
+            countOp = 0;
+            int i1 = 0;
+            int i2 = 0;
+            int iCheck1 = -1;
+            int iCheck2 = -1;
+            int flag = 0;
+
+            while (i1 < matrix.GetLength(0) && i2 < matrix.GetLength(1))
+            {
+                countOp++;
+                for (int i = i1 ; i < matrix.GetLength(0); i++)
+                {
+                    countOp++;
+                    matrix[i, i2] = matrix[i - 1 >= 0 ? i - 1 : 0, i2] > matrix[i, i2 - 1 >= 0 ? i2 - 1 : 0] ? 
+                        matrix[i - 1 >= 0 ? i - 1 : 0, i2] : matrix[i, i2 - 1 >= 0 ? i2 - 1 : 0];
+                    if (flag == 0 && iCheck2 != i2 && arr1[i] == arr2[i2]) {
+                        matrix[i, i2]++; flag = 1; iCheck1 = i; iCheck2 = i2; }
+                }
+                for (int j = i2 + 1; j < matrix.GetLength(1); j++)
+                {
+                    countOp++;
+                    matrix[i1, j] = matrix[i1, j - 1 >= 0 ? j - 1 : 0] > matrix[i1 - 1 >= 0 ? i1 - 1 : 0, j ] ? 
+                        matrix[i1 , j - 1 >= 0 ? j - 1 : 0] : matrix[i1 - 1 >= 0 ? i1 - 1 : 0, j];
+                    if (flag == 0 && iCheck1 != i1 && arr1[i1] == arr2[j]) {
+                        matrix[i1, j]++; flag = 1; iCheck1 = i1; iCheck2 = j; }
+                }
+                i1++;
+                i2++;
+                flag = 0;
+            }
+
+            Console.Write("   ");
+            foreach (var item in arr2)
+            {
+                Console.Write($"{item, 2} ");
+            }
+            Console.WriteLine();
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                Console.Write($"{arr1[i],2} ");
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    Console.Write($"{matrix[i, j],2} ");
+                }
+                Console.WriteLine();
+            }
+            Console.WriteLine($"\nЧерез матрицу: Максимальная длина последовательности = {matrix[matrix.GetLength(0) - 1, matrix.GetLength(1) - 1]}");
+            Console.WriteLine($"Через матрицу: Количество операций = {countOp}");
+
             Console.ReadKey();
+        }
+
+        private static void Print(int[] arr)
+        {
+            foreach (var item in arr)
+            {
+                Console.Write($"{item} ");
+            }
+        }
+
+        private static int MaxSequenceRecursion(ref int[] arr1, ref int[] arr2, int index1 = 0, int index2 = 0)
+        {
+            countOp++;
+            if (index1 >= arr1.Length || index2 >= arr2.Length) { return 0; }
+            else if (arr1[index1] == arr2[index2])
+            {
+                return 1 + MaxSequenceRecursion(ref arr1, ref arr2, index1 +1, index2 + 1);
+            }
+            else
+            {
+                int a = MaxSequenceRecursion(ref arr1, ref arr2, index1 + 1, index2);
+                int b = MaxSequenceRecursion(ref arr1, ref arr2, index1, index2 + 1);
+                return a > b ? a : b;
+            }
         }
 
         private static bool SolutionToMoveHorse(int startN, int startM, int n, int m, ref int[,] bourd, ref int[,] moves, int number = 1)
