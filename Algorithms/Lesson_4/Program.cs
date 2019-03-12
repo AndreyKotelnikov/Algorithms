@@ -16,10 +16,11 @@ namespace Lesson_4
             //Здесь алгоритм решения такой же, как и в задаче о 8 ферзях.Разница только в проверке положения коня.
 
             //При размере доски 70 x 69 время работы алгоритма составит 6,5 секунд. Использован жадный алгоритм.
-            int N = 70;
-            int M = 69;
-            int startN = 7;
-            int startM = 7;
+            int N = 5;
+            int M = 5;
+            int startN = 1;  //диапазон значений от 1 до N
+            int startM = 1;  //диапазон значений от 1 до M
+            
             int[,] bourd = new int[N + 1, M + 1];
             int[,] moves = {
             {  2,  1} , {  2, -1},
@@ -46,6 +47,9 @@ namespace Lesson_4
 
             Console.WriteLine($"\nРазмер доски {N} x {M}.");
             Console.WriteLine($"Начальное положение коня {startN} {startM}.");
+
+            if (startN < 1 || startM < 1 || startN > N || startM > M)
+            { Console.WriteLine("!!! !!! !!! Введены некорректные значения начальных координат фигуры коня!"); }
             Console.WriteLine($"\nКоличество операций = {countOp}");
             DateTime finish = DateTime.Now;
             Console.WriteLine($"Время работы алгоритма в секундах {(finish - start).TotalSeconds}");
