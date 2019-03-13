@@ -16,18 +16,19 @@ namespace Lesson_5
             arr = new T[size];
         }
 
-        public void Push()
+        public void Push(T item)
         {
-            if (lastIndex < arr.Length - 1) { lastIndex++; }
+            if (lastIndex < arr.Length - 1) { lastIndex++; arr[lastIndex] = item; }
             else { throw new Exception("Стек полностью заполнен!"); }
             
         }
 
         public T Pop()
         {
-            if (lastIndex >= 0) { lastIndex--; }
+            T value;
+            if (lastIndex >= 0) { value = arr[lastIndex]; lastIndex--; }
             else { throw new Exception("Стек пустой!"); }
-            return arr[lastIndex];
+            return value;
         }
 
         /// <summary>
@@ -39,5 +40,9 @@ namespace Lesson_5
             return lastIndex;
         }
 
+        public void Clean()
+        {
+            lastIndex = -1;
+        }
     }
 }
