@@ -17,11 +17,17 @@ namespace Lesson_5
 
         public ArithmeticExpression(string inficsString)
         {
-            if (!(CheckSymbols(inficsString) && CheckBrackets(inficsString))) {
+            string str = string.Empty;
+            foreach (var item in inficsString)
+            {
+                if (item == ' ') { continue; }
+                str += item;
+            }
+            if (!(CheckSymbols(str) && CheckBrackets(str) && CheckOperators(str))) {
                 throw new Exception("Некорректное арифметическое выражение!"); }
-            this.inficsString = inficsString;
-            numberStack = new MyStack<int>(inficsString.Length / 2 + 1);
-            charStack = new MyStack<char>(inficsString.Length);
+            this.inficsString = str;
+            numberStack = new MyStack<int>(str.Length / 2 + 1);
+            charStack = new MyStack<char>(str.Length);
         }
 
         public string ConvertInficsToPostfics()
@@ -36,8 +42,18 @@ namespace Lesson_5
             numberStack.Clean();
             charStack.Clean();
             string number = string.Empty;
+            int countNewNumber = 0;
             for (int index = 0; index < inficsString.Length; index++)
             {
+                if (numberStack.GetCurrentIndex() == -1)
+                {
+                    ;
+                }
+                if (index == 5)
+                {
+                    ;
+                }
+
                 if (char.IsDigit(inficsString[index]))
                 {
                     number += inficsString[index];
@@ -46,6 +62,7 @@ namespace Lesson_5
                 else if (number != string.Empty)
                 {
                     numberStack.Push(int.Parse(number));
+                    countNewNumber++;
                     number = string.Empty;
                 }
 
@@ -66,14 +83,19 @@ namespace Lesson_5
                     {
                         if (onlyConvert)
                         {
-                            postficsString += $"{numberStack.Pop()} ";
-                            postficsString += $"{numberStack.Pop()} ";
+                            int temp1, temp2;
+                            temp1 = numberStack.Pop();
+                            temp2 = numberStack.Pop();
+                            if (temp2 != int.MinValue) { postficsString += $"{temp2} "; }
+                            if (temp1 != int.MinValue) { postficsString += $"{temp1} "; }
                             postficsString += $"{charStack.Pop()} ";
+                            numberStack.Push(int.MinValue);
                             continue;
                         }
                         else
                         {
-                            numberStack.Push(PerformOperation());
+                            numberStack.Push(PerformOperation(countNewNumber == 0));
+                            countNewNumber = 0;
                             continue;
                         }
                     }
@@ -87,7 +109,7 @@ namespace Lesson_5
             else { return numberStack.Pop(); }
         }
 
-        private int PerformOperation()
+        private int PerformOperation(bool isResult)
         {
             int temp;
             switch (charStack.Pop())
@@ -95,13 +117,21 @@ namespace Lesson_5
                 case '+':
                     return numberStack.Pop() + numberStack.Pop();
                 case '-':
-                    temp = numberStack.Pop();
-                    return  numberStack.Pop() - temp;
+                    if (isResult) { return numberStack.Pop() - numberStack.Pop(); }
+                    else
+                    {
+                        temp = numberStack.Pop();
+                        return numberStack.Pop() - temp;
+                    }
                 case '*':
-                    return numberStack.Pop() + numberStack.Pop();
+                    return numberStack.Pop() * numberStack.Pop();
                 case '/':
-                    temp = numberStack.Pop();
-                    return numberStack.Pop() / temp;
+                    if (isResult) { return numberStack.Pop() / numberStack.Pop(); }
+                    else
+                    {
+                        temp = numberStack.Pop();
+                        return numberStack.Pop() / temp;
+                    }
                 default:
                     throw new Exception("Неверное значение символа в операторе switch");
             }
@@ -111,7 +141,8 @@ namespace Lesson_5
         {
             foreach (var item in arithmExp)
             {
-                 if (!(char.IsDigit(item) || operators.Contains(item) || brackets.Contains(item)))
+                if (item == ' ') { continue; }
+                if (!(char.IsDigit(item) || operators.Contains(item) || brackets.Contains(item)))
                 {
                     return false;
                 }
@@ -124,6 +155,7 @@ namespace Lesson_5
             MyStack<char> charStack = new MyStack<char>(arithmExp.Length); 
             foreach (var item in arithmExp)
             {
+                if (item == ' ') { continue; }
                 for (int i = 0; i < brackets.Length; i += 2)
                 {
                     if (item == brackets[i]) { charStack.Push(item); break; }
@@ -139,14 +171,20 @@ namespace Lesson_5
         public static bool CheckOperators(string arithmExp)
         {
             if (arithmExp[0] == '-' && operators.Contains(arithmExp[1]) 
-                || operators.Contains(arithmExp[arithmExp.Length - 1])) { return false; } 
-            for (int i = 1; i < arithmExp.Length - 1; i++)
+                || operators.Contains(arithmExp[arithmExp.Length - 1])) { return false; }
+            string str = string.Empty;
+            foreach (var item in arithmExp)
+            {
+                if (item == ' ') { continue; }
+                str += item;
+            }
+            for (int i = 1; i < str.Length - 1; i++)
             {
                 foreach (var item in operators)
                 {
-                    if (arithmExp[i] == item 
-                        && !((char.IsDigit(arithmExp[i - 1]) || brackets.Contains(arithmExp[i - 1]))
-                            && (char.IsDigit(arithmExp[i + 1]) || brackets.Contains(arithmExp[i + 1]))))
+                    if (str[i] == item 
+                        && !((char.IsDigit(str[i - 1]) || brackets.Contains(str[i - 1]))
+                            && (char.IsDigit(str[i + 1]) || brackets.Contains(str[i + 1]))))
                     {
                         return false; 
                     }

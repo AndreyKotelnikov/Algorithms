@@ -17,8 +17,8 @@ namespace Lesson_5
             string userInput;
             while (true)
             {
-                Console.WriteLine("Введите арифметическое выражение:");
-                userInput = Console.ReadLine();
+                Console.WriteLine("Введите арифметическое выражение\n(каждое арифметическое действие и его операнды должны быть заключены в скобки):");
+                userInput = Console.ReadLine().Trim();
                 if (!ArithmeticExpression.CheckSymbols(userInput)) { Console.WriteLine("Выражение содержит недопустимые символы!"); continue; }
                 if (!ArithmeticExpression.CheckBrackets(userInput)) { Console.WriteLine("Выражение содержит ошибки в выставлении скобок!"); }
                 if (!ArithmeticExpression.CheckOperators(userInput)) { Console.WriteLine("Выражение содержит ошибки в указании операторов!"); }
@@ -27,15 +27,10 @@ namespace Lesson_5
             Console.WriteLine("\nВыражение введено корректно.");
             //Делаем вычисления выражения и выводим в консоль
             ArithmeticExpression expr = new ArithmeticExpression(userInput);
-            try
-            {
-                Console.WriteLine($"\nПостфиксная форма выражения: {expr.ConvertInficsToPostfics()}");
-                Console.WriteLine($"\nЗначение выражения: {expr.СalculateExpression()}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            
+            Console.WriteLine($"\nПостфиксная форма выражения: {expr.ConvertInficsToPostfics()}");
+            Console.WriteLine($"\nЗначение выражения (дробная часть не выводится): {expr.СalculateExpression()}");
+            
             Console.ReadKey();
         }
     }
