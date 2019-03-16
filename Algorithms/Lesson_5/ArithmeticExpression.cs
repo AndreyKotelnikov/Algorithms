@@ -42,18 +42,8 @@ namespace Lesson_5
             numberStack.Clean();
             charStack.Clean();
             string number = string.Empty;
-            int countNewNumber = 0;
             for (int index = 0; index < inficsString.Length; index++)
             {
-                if (numberStack.GetCurrentIndex() == -1)
-                {
-                    ;
-                }
-                if (index == 5)
-                {
-                    ;
-                }
-
                 if (char.IsDigit(inficsString[index]))
                 {
                     number += inficsString[index];
@@ -62,7 +52,6 @@ namespace Lesson_5
                 else if (number != string.Empty)
                 {
                     numberStack.Push(int.Parse(number));
-                    countNewNumber++;
                     number = string.Empty;
                 }
 
@@ -74,7 +63,7 @@ namespace Lesson_5
 
                 for (int i = 0; i < brackets.Length; i += 2)
                 {
-                    if (inficsString[index] == brackets[i]) { continue; }
+                    if (inficsString[index] == brackets[i]) { break; }
                 }
 
                 for (int i = 1; i < brackets.Length; i += 2)
@@ -90,13 +79,13 @@ namespace Lesson_5
                             if (temp1 != int.MinValue) { postficsString += $"{temp1} "; }
                             postficsString += $"{charStack.Pop()} ";
                             numberStack.Push(int.MinValue);
-                            continue;
+                            break;
                         }
                         else
                         {
-                            numberStack.Push(PerformOperation(countNewNumber == 0));
-                            countNewNumber = 0;
-                            continue;
+                            
+                            numberStack.Push(PerformOperation());
+                            break;
                         }
                     }
                 }
@@ -109,7 +98,7 @@ namespace Lesson_5
             else { return numberStack.Pop(); }
         }
 
-        private int PerformOperation(bool isResult)
+        private int PerformOperation()
         {
             int temp;
             switch (charStack.Pop())
@@ -117,21 +106,13 @@ namespace Lesson_5
                 case '+':
                     return numberStack.Pop() + numberStack.Pop();
                 case '-':
-                    if (isResult) { return numberStack.Pop() - numberStack.Pop(); }
-                    else
-                    {
-                        temp = numberStack.Pop();
+                    temp = numberStack.Pop();
                         return numberStack.Pop() - temp;
-                    }
                 case '*':
                     return numberStack.Pop() * numberStack.Pop();
                 case '/':
-                    if (isResult) { return numberStack.Pop() / numberStack.Pop(); }
-                    else
-                    {
-                        temp = numberStack.Pop();
+                    temp = numberStack.Pop();
                         return numberStack.Pop() / temp;
-                    }
                 default:
                     throw new Exception("Неверное значение символа в операторе switch");
             }
@@ -139,6 +120,7 @@ namespace Lesson_5
 
         public static bool CheckSymbols(string arithmExp)
         {
+            if (string.IsNullOrEmpty(arithmExp)) { return false; }
             foreach (var item in arithmExp)
             {
                 if (item == ' ') { continue; }
@@ -152,6 +134,7 @@ namespace Lesson_5
 
         public static bool CheckBrackets(string arithmExp)
         {
+            if (string.IsNullOrEmpty(arithmExp)) { return false; }
             MyStack<char> charStack = new MyStack<char>(arithmExp.Length); 
             foreach (var item in arithmExp)
             {
@@ -170,6 +153,7 @@ namespace Lesson_5
 
         public static bool CheckOperators(string arithmExp)
         {
+            if (string.IsNullOrEmpty(arithmExp)) { return false; }
             if (arithmExp[0] == '-' && operators.Contains(arithmExp[1]) 
                 || operators.Contains(arithmExp[arithmExp.Length - 1])) { return false; }
             string str = string.Empty;
