@@ -15,11 +15,11 @@ namespace Lesson_6
             //a.Добавить в него обход дерева различными способами.
             //b.Реализовать поиск в нём.
 
-            Console.SetBufferSize(300, 200); //Расширяем буфер вывода в консоль, чтобы поместилось отображение дерева с большой высотой. 
+            Console.SetBufferSize(2000, 200); //Расширяем буфер вывода в консоль, чтобы поместилось отображение дерева с большой высотой. 
 
             //Теперь создаём узлы для дерева
-            Random rand = new Random(30);
-            Node[] nodeList = new Node[7];
+            Random rand = new Random(90);
+            Node[] nodeList = new Node[10];
             for (int i = 0; i < nodeList.Length; i++)
             {
                 nodeList[i] = new Node(rand.Next(100));

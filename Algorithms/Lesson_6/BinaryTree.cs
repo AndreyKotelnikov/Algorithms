@@ -107,6 +107,13 @@ namespace Lesson_6
             return 1;
         }
 
+        public int CountOfNode(Node node)
+        {
+            if (node.Left != null && node.Right == null) { return 1 + MaxHeightOfNode(node.Left); }
+            if (node.Right != null && node.Left == null) { return 1 + MaxHeightOfNode(node.Right); }
+            return 1;
+        }
+
         /// <summary>
         /// Делает одну ротацию узла вправо: левый сын становится родителем узла, правая ветка от левого сына переходит к левую ветку узла. 
         /// </summary>
@@ -149,25 +156,34 @@ namespace Lesson_6
         /// Проверяем для указанного узла разность высоты деревьев левого и правого сыновей, если она больше 1, то вызываем соответствующую ротацию узлов.
         /// </summary>
         /// <param name="node">Узел, ветви которого нужно сбалансировать</param>
-        public void BalanceTree(Node node = null)
+        public void BalanceTree(Node node = null, int count = 0)
         {
             bool flag = false;
             if (node == null) { node = Root; flag = true; }
             while (true)
             {
-                if ((node.Left == null ? 0 : MaxHeightOfNode(node.Left)) - (node.Right == null ? 0 : MaxHeightOfNode(node.Right)) > 1)
+                int heightLeft = node.Left == null ? 0 : MaxHeightOfNode(node.Left);
+                int heightRight = node.Right == null ? 0 : MaxHeightOfNode(node.Right);
+                int countLeft = node.Left == null ? 0 : CountOfNode(node.Left);
+                int countRight = node.Right == null ? 0 : CountOfNode(node.Right);
+
+                if (heightLeft > heightRight || (countLeft - countRight) > 1)
                 {  RoteteRight(node);  }
-                else if ((node.Right == null ? 0 : MaxHeightOfNode(node.Right)) - (node.Left == null ? 0 : MaxHeightOfNode(node.Left)) > 1)
+                else if (heightLeft < heightRight || (countRight - countLeft) > 1)
                 { RoteteLeft(node); }
                 else { break; }
             }
             if (node.Left != null) { BalanceTree(node.Left); }
             if (node.Right != null) { BalanceTree(node.Right); }
-            if (Math.Abs((Root.Left == null ? 0 : MaxHeightOfNode(Root.Left)) - (Root.Right == null ? 0 : MaxHeightOfNode(Root.Right))) > 1)
-            { BalanceTree(Root); }
+            
             if (flag == true)
             {
-               Height = MaxHeightOfNode(Root); 
+                int differenceHeight = Math.Abs((Root.Left == null ? 0 : MaxHeightOfNode(Root.Left)) - (Root.Right == null ? 0 : MaxHeightOfNode(Root.Right)));
+                int differenceCount = Math.Abs((node.Left == null ? 0 : CountOfNode(node.Left)) - (node.Right == null ? 0 : CountOfNode(node.Right)));
+                if (differenceHeight > 1 || differenceCount > 1) { BalanceTree(null); }
+                if (differenceHeight <= 1 && differenceCount <= 1 && count < 2) { BalanceTree(null, count + 1); }
+                if (differenceHeight <= 1 && differenceCount <= 1 && count >= 2)
+                { Height = MaxHeightOfNode(Root); }
             }
             return;
         }
