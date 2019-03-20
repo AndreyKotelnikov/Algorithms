@@ -19,7 +19,7 @@ namespace Lesson_6
 
             //Теперь создаём узлы для дерева
             Random rand = new Random(90);
-            Node[] nodeList = new Node[10];
+            Node[] nodeList = new Node[30];
             for (int i = 0; i < nodeList.Length; i++)
             {
                 nodeList[i] = new Node(rand.Next(100));
