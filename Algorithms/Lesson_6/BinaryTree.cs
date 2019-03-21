@@ -156,10 +156,15 @@ namespace Lesson_6
         /// Проверяем для указанного узла разность высоты деревьев левого и правого сыновей, если она больше 1, то вызываем соответствующую ротацию узлов.
         /// </summary>
         /// <param name="node">Узел, ветви которого нужно сбалансировать</param>
-        public void BalanceTree(Node node = null, int count = 0)
+        public void BalanceTree(Node node = null, int count = 0, int direction = -1)
         {
             bool flag = false;
             if (node == null) { node = Root; flag = true; }
+            if (node.Data == 74)
+            {
+                ;
+            }
+            
             while (true)
             {
                 int heightLeft = node.Left == null ? 0 : MaxHeightOfNode(node.Left);
@@ -167,14 +172,24 @@ namespace Lesson_6
                 int countLeft = node.Left == null ? 0 : CountOfNode(node.Left);
                 int countRight = node.Right == null ? 0 : CountOfNode(node.Right);
 
-                if (heightLeft > heightRight || (countLeft - countRight) > 1)
-                {  RoteteRight(node);  }
-                else if (heightLeft < heightRight || (countRight - countLeft) > 1)
-                { RoteteLeft(node); }
+                if (node.Left != null && (heightLeft > heightRight || (countLeft - countRight) > 0))
+                {
+                    if (direction == 1) { direction = -1; break; }
+                    direction = 0;
+                    RoteteRight(node);
+                    node = node.Parent;
+                }
+                else if (node.Right != null && (heightLeft < heightRight || (countRight - countLeft) > 0))
+                {
+                    if (direction == 0) { direction = -1; break; }
+                    direction = 1;
+                    RoteteLeft(node);
+                    node = node.Parent;
+                }
                 else { break; }
             }
-            if (node.Left != null) { BalanceTree(node.Left); }
-            if (node.Right != null) { BalanceTree(node.Right); }
+            if (node.Left != null) { BalanceTree(node.Left, direction: direction == 1 ? 0 : -1); }
+            if (node.Right != null) { BalanceTree(node.Right, direction: direction == 0 ? 1 : -1); }
             
             if (flag == true)
             {

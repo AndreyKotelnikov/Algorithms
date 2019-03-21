@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Lesson_5
 {
-    internal class MyStack<T>
+    public class MyStack<T>
     {
         T[] arr;
         int lastIndex = -1;
