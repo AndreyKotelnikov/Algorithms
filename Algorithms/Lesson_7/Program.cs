@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Lesson_5;
 
 namespace Lesson_7
 {
@@ -14,6 +15,8 @@ namespace Lesson_7
             //Реализовать алгоритм Дейкстры по обходу графа
             //Создаём граф
             Graf graf = new Graf(8);
+            
+            //Для примера взял граф, который обсуждали на вебинаре по алгоритму Дейкстры
             graf.SetEdge(0, 1, 4);
             graf.SetEdge(0, 2, 8);
             graf.SetEdge(0, 3, 3);
@@ -27,10 +30,26 @@ namespace Lesson_7
             graf.SetEdge(4, 7, 5);
             graf.SetEdge(5, 7, 3);
             graf.SetEdge(6, 7, 2);
-            graf.PrintMatrix();
 
-            //Проверяем граф на связанность
+            //Выводим матрицу смежности в консоль
+            graf.PrintMatrix();
+            
+            //Проверяем вершины графа на связанность
+            int startVertice = 6;
+            int endVertice = 1;
+            Console.WriteLine($"\nПроверка связанности {startVertice} и {endVertice} = {graf.CheckConnection(startVertice, endVertice)}");
+            
             //Вычисляем минимальный путь между двумя вершинами по алгоритму Дейкстры
+            Console.WriteLine($"\nВычисляем кротчайший путь из вершины {startVertice} в вершину {endVertice}");
+            int[] minWeightRoute = graf.MinWeightRoute(startVertice, endVertice);
+
+            //Выводим получившийся порядок вершин маршрута в консоль
+            if (minWeightRoute.Length == 0) { Console.WriteLine("Вершины не связаны между собой."); }
+            foreach (var item in minWeightRoute)
+            {
+                Console.Write($"{item} ");
+            }
+
             Console.ReadKey();
         }
     }
