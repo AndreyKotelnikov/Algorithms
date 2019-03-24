@@ -60,9 +60,9 @@ namespace Lesson_8
 
         public void TestSortes()
         {
-            time = new int[arraysForTest.Count * sortMethods.Length];
-            comparer = new int[arraysForTest.Count * sortMethods.Length];
-            swap = new int[arraysForTest.Count * sortMethods.Length];
+            time = new int[3 * sortMethods.Length];
+            comparer = new int[3 * sortMethods.Length];
+            swap = new int[3 * sortMethods.Length];
             int index = 0;
             Console.WriteLine($"{"Метод", 10}| {"Кол-во эл.",10}| {"Вид массива",14}| {"Сравнения",10}| " +
                 $"{"Перестановки",12}| {"Время",10}| {"Сравнения/N",11}| {"Отсортирован?", 13}|");
@@ -94,7 +94,7 @@ namespace Lesson_8
                         StartTime = DateTime.Now;
                         sortMethod(ref arr);
                         FinishTime = DateTime.Now;
-                        Print(arr);
+                        //Print(arr);
                         if (MaxNumberInArray == arraysForTest[j].Length)
                         {
                             time[index] = (int)(FinishTime - StartTime).TotalMilliseconds;
@@ -382,8 +382,6 @@ namespace Lesson_8
             if (endIndex == -10) { endIndex = arr.Length - 1; }
             if (endIndex <= startIndex) { return; }
             int pillar = arr[endIndex];
-            int lSum = 0;
-            int rSum = 0;
             int lPointer = startIndex;
             int rPointer = endIndex;
             int direction = 1;
@@ -404,7 +402,6 @@ namespace Lesson_8
                         direction = -1;
                         continue;
                     }
-                    lSum += arr[lPointer];
                     lPointer++;
                 }
                 else 
@@ -416,18 +413,16 @@ namespace Lesson_8
                         arr[lPointer] = arr[rPointer];
                         arr[rPointer] = temp;
                         direction = 1;
-                        lSum += arr[lPointer];
-                        rSum += arr[rPointer];
                         lPointer++;
-                        rPointer--;
+                        if (lPointer >= rPointer - 1) { break; }
+                        if (arr[rPointer - 1] > pillar) { rPointer--; }
                         continue;
                     }
-                    rSum += arr[rPointer];
                     rPointer--;
                 }
             }
-            Quick2P(ref arr, startIndex, lPointer - 1, lSum / (endIndex - startIndex + 1));
-            Quick2P(ref arr, rPointer, endIndex, rSum / (endIndex - startIndex));
+            Quick2P(ref arr, startIndex, lPointer - 1);
+            Quick2P(ref arr, rPointer, endIndex);
         }
 
 
