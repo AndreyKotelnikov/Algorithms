@@ -14,19 +14,22 @@ namespace Lesson_8
             //Андрей Котельников
             //5.	Проанализировать время работы каждого из вида сортировок для 100, 10000, 1000000 элементов. 
             //Заполнить таблицу.
-            int[] numberItemsInArrays = new int[] { 10000, 100000};
+            int[] numberItemsInArrays = new int[] { 20 };
             MySorts.SortDelegate[] sortMethods = new MySorts.SortDelegate[] 
             {
                 MySorts.Quick,
-                MySorts.QuickPlus,
-                MySorts.Buble,
-                MySorts.BublePlus,
-                MySorts.Shaker
+                MySorts.Quick2P,
+                MySorts.QuickAver,
+                //MySorts.Buble,
+                //MySorts.BublePlus,
+                //MySorts.Shaker,
+                MySorts.Heap               
             };
             MySorts sorts = new MySorts(numberItemsInArrays, sortMethods);
             //sorts.Print();
             //Console.WriteLine();
             sorts.TestSortes();
+            sorts.TestSortesСompareTable();
 
             Console.ReadKey();
         }

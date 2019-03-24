@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Lesson_8
@@ -12,19 +13,26 @@ namespace Lesson_8
 
         private List<int[]> arraysForTest;
         private SortDelegate[] sortMethods;
+        private int[] time;
+        private int[] comparer;
+        private int[] swap;
+
 
         public static int CountOp { get; private set; }
         public static int CountSwap { get; private set; }
         public static DateTime StartTime { get; private set; }
         public static DateTime FinishTime { get; private set; }
+        public int MaxNumberInArray { get; private set; }
 
         public MySorts (int[] numberItemsInArrays, SortDelegate[] sortMethods)
         {
             this.sortMethods = sortMethods;
+            MaxNumberInArray = 0;
             arraysForTest = new List<int[]>();
             int[] arr;
             foreach (var item in numberItemsInArrays)
             {
+                if (MaxNumberInArray < item) { MaxNumberInArray = item; }
                 arr = CreateNewArray(item);
                 arraysForTest.Add(arr);
                 arr = arr.Clone() as int[];
@@ -52,11 +60,12 @@ namespace Lesson_8
 
         public void TestSortes()
         {
+            time = new int[arraysForTest.Count * sortMethods.Length];
+            comparer = new int[arraysForTest.Count * sortMethods.Length];
+            swap = new int[arraysForTest.Count * sortMethods.Length];
+            int index = 0;
             Console.WriteLine($"{"Метод", 10}| {"Кол-во эл.",10}| {"Вид массива",14}| {"Сравнения",10}| " +
-                $"{"Перестановки",12}| {"Время",10}| {"Сравнения/N",11}|");
-            SortDelegate interrupt1 = new SortDelegate(Quick);
-            SortDelegate interrupt2 = new SortDelegate(QuickPlus);
-
+                $"{"Перестановки",12}| {"Время",10}| {"Сравнения/N",11}| {"Отсортирован?", 13}|");
             for (int i = 0; i < arraysForTest.Count; i += 3)
             {
                 foreach (var sortMethod in sortMethods)
@@ -85,12 +94,19 @@ namespace Lesson_8
                         StartTime = DateTime.Now;
                         sortMethod(ref arr);
                         FinishTime = DateTime.Now;
-                        
-                        //Print(arr);
+                        Print(arr);
+                        if (MaxNumberInArray == arraysForTest[j].Length)
+                        {
+                            time[index] = (int)(FinishTime - StartTime).TotalMilliseconds;
+                            comparer[index] = CountOp;
+                            swap[index] = CountSwap;
+                            index++;
+                        }
                         Console.WriteLine
-                            ($"{((CountOp >= 45000000 && sortMethod == interrupt1) || (CountOp >= 50000000 && sortMethod == interrupt2) ? "Прерывание" : CountOp.ToString()), 10}| " +
+                            ($"{(CountOp == -1 ? "Прерывание" : CountOp.ToString()), 10}| " +
                             $"{CountSwap, 12}| " +
-                            $"{(int)(FinishTime - StartTime).TotalMilliseconds, 10}| {CountOp / arr.Length, 11}|");
+                            $"{(int)(FinishTime - StartTime).TotalMilliseconds, 10}| {CountOp / arr.Length, 11}| " +
+                            $"{(CheckSortResult(ref arr) ? "Да" : "Нет"), 13}|");
                     }
                     Console.WriteLine();
                 }
@@ -100,43 +116,64 @@ namespace Lesson_8
 
         public void TestSortesСompareTable()
         {
+            Console.WriteLine($"\n\nТаблица сравнения методов сортировки на массивах из {MaxNumberInArray} элементов:");
+            Console.WriteLine("По времени выполнения (вычитаем время по столбцу из времени по строке)." +
+                "\nОтрицательное значение означает, что метод в строке работает быстрее, чем по столбцу:");
+            OutPutTable(ref time, sortMethods);
+            Console.WriteLine("\nПо количеству сравнений (вычитаем время по столбцу из времени по строке)." +
+               "\nОтрицательное значение означает, что метод в строке делает меньше сравнений, чем по столбцу:");
+            OutPutTable(ref comparer, sortMethods);
+            Console.WriteLine("\nПо количеству свопов (вычитаем время по столбцу из времени по строке)." +
+               "\nОтрицательное значение означает, что метод в строке делает меньше свопов, чем по столбцу:");
+            OutPutTable(ref swap, sortMethods);
+        }
 
-            for (int i = 0; i < arraysForTest.Count; i += 3)
+        private void OutPutTable(ref int[] arr, SortDelegate[] sortMethods)
+        {
+            Console.Write($"{"Методы", 10}| {"Тип", 9}| ");
+            foreach (var sortMethod in sortMethods) 
             {
-                foreach (var sortMethod in sortMethods)
+                Console.Write($"{sortMethod.Method.ToString().Substring(5, sortMethod.Method.ToString().IndexOf('(') - 5),10}| ");
+            }
+            Console.WriteLine();
+            int index = 0;
+            foreach (var sortMethod in sortMethods)
+            {
+                for (int i = index; i < index + 3; i++)
                 {
-                    for (int j = i; j < i + 3; j++)
+                    Console.Write($"{sortMethod.Method.ToString().Substring(5, sortMethod.Method.ToString().IndexOf('(') - 5),10}| ");
+                    switch (i % 3)
                     {
-                        CountOp = 0;
-                        CountSwap = 0;
-
-                        switch (j % 3)
-                        {
-                            case 0:
-                                Console.Write($"      Обычный [{arraysForTest[j].Length}]: ");
-                                break;
-                            case 1:
-                                Console.Write($"     Обратный [{arraysForTest[j].Length}]: ");
-                                break;
-                            case 2:
-                                Console.Write($"Сортированный [{arraysForTest[j].Length}]: ");
-                                break;
-                            default:
-                                break;
-                        }
-                        int[] arr = arraysForTest[j].Clone() as int[];
-                        StartTime = DateTime.Now;
-                        sortMethod(ref arr);
-                        FinishTime = DateTime.Now;
-                        Print(arr);
-                        Console.WriteLine($"compare = {CountOp}, Свопов = {CountSwap}, " +
-                            $"Время миллисекунд = {(int)(FinishTime - StartTime).TotalMilliseconds}, CountOp/N = {CountOp / arr.Length}," +
-                            $" {sortMethod.Method.ToString().Substring(5, sortMethod.Method.ToString().IndexOf('(') - 5)}");
+                        case 0:
+                            Console.Write(" Обычный | ");
+                            break;
+                        case 1:
+                            Console.Write("Обратный | ");
+                            break;
+                        case 2:
+                            Console.Write("Отсортир | ");
+                            break;
+                        default:
+                            break;
+                    }
+                    for (int j = i % 3; j < arr.Length; j += 3)
+                    {
+                        Console.Write($"{(arr[index + (i % 3)] - arr[j]), 10}| ");
                     }
                     Console.WriteLine();
                 }
-                Console.WriteLine();
+                index += 3;
             }
+
+        }
+
+        public bool CheckSortResult(ref int[] arr)
+        {
+            for (int i = 1; i < arr.Length; i++)
+            {
+                if (arr[i - 1] > arr[i]) { return false; }
+            }
+            return true;
         }
 
         public static int BinarySearch(int item, ref int[] arr)
@@ -256,7 +293,7 @@ namespace Lesson_8
             for (int i = startIndex; i <= endIndex; i++)
             {
                 CountOp++;
-                if (CountOp == 45000000) { return; }
+                if (CountOp >= 45000000) { CountOp = -1; return; } 
                 if (arr[i] <= pillar)
                 {
                     if (i == wall + 1)
@@ -277,7 +314,7 @@ namespace Lesson_8
             if (endIndex - wall > 0) { Quick(ref arr, wall + 1, endIndex); }
         }
 
-        public static void QuickPlus(ref int[] arr, int startIndex = 0, int endIndex = -10, int avarage = 0)
+        public static void QuickAver(ref int[] arr, int startIndex = 0, int endIndex = -10, int avarage = 0)
         {
             if (endIndex == -10) { endIndex = arr.Length - 1; avarage = arr[endIndex]; }
             if (startIndex >= endIndex) { return; }
@@ -289,8 +326,7 @@ namespace Lesson_8
             for (int i = startIndex; i <= endIndex; i++)
             {
                 CountOp++;
-                if (CountOp >= 50000000) {
-                    return; }
+                if (CountOp >= 50000000) { CountOp = -1; return; }
                 if (arr[i] <= pillar)
                 {
                     if (i == wall + 1)
@@ -311,8 +347,89 @@ namespace Lesson_8
                 else { rightSum += arr[i]; }
             }
             if (wall - startIndex > 0)
-                { QuickPlus(ref arr, startIndex, arr[wall] == pillar ? wall - 1 : wall, leftSum / (wall - startIndex + 1)); }
-            if (endIndex - wall > 1) { QuickPlus(ref arr, wall + 1, endIndex, rightSum / (endIndex - wall)); }
+            {
+                QuickAver(ref arr, startIndex, arr[wall] == pillar ? wall - 1 : wall, leftSum / (wall - startIndex + 1));
+            }
+            if (endIndex - wall > 1)
+            {
+                QuickAver(ref arr, wall + 1, endIndex, rightSum / (endIndex - wall));
+            }
         }
+
+        public static void Heap(ref int[] arr, int noUsed1 = 0, int noUsed2 = 0, int noUsed3 = 0)
+        {
+            int endHeap = arr.Length - 1;
+            int temp;
+
+            while (endHeap > 0)
+            {
+                for (int i = (endHeap - (2 - (endHeap % 2))) / 2; i >= 0 ; i--)
+                {
+                    CountOp++;
+
+                    if (i * 2 + 1 > endHeap) { continue; }
+                    if (arr[i] < arr[i * 2 + 1]) { CountSwap++; temp = arr[i]; arr[i] = arr[i * 2 + 1]; arr[i * 2 + 1] = temp; }
+                    if (i * 2 + 2 > endHeap) { continue; }
+                    if (arr[i] < arr[i * 2 + 2]) { CountSwap++; temp = arr[i]; arr[i] = arr[i * 2 + 2]; arr[i * 2 + 2] = temp; }
+                    
+                }
+                CountSwap++; temp = arr[endHeap]; arr[endHeap] = arr[0]; arr[0] = temp; endHeap--;
+            }
+        }
+
+        public static void Quick2P(ref int[] arr, int startIndex = 0, int endIndex = -10, int avarage = 0)
+        {
+            if (endIndex == -10) { endIndex = arr.Length - 1; }
+            if (endIndex <= startIndex) { return; }
+            int pillar = arr[endIndex];
+            int lSum = 0;
+            int rSum = 0;
+            int lPointer = startIndex;
+            int rPointer = endIndex;
+            int direction = 1;
+            int temp;
+            while (lPointer < rPointer)
+            {
+                CountOp++;
+                if(CountOp == 35000000)
+                {
+                    CountOp = -1;
+                    return;
+                }
+
+                if (direction == 1)
+                {
+                    if(arr[lPointer] > pillar)
+                    {
+                        direction = -1;
+                        continue;
+                    }
+                    lSum += arr[lPointer];
+                    lPointer++;
+                }
+                else 
+                {
+                    if (arr[rPointer] <= pillar)
+                    {
+                        CountSwap++;
+                        temp = arr[lPointer];
+                        arr[lPointer] = arr[rPointer];
+                        arr[rPointer] = temp;
+                        direction = 1;
+                        lSum += arr[lPointer];
+                        rSum += arr[rPointer];
+                        lPointer++;
+                        rPointer--;
+                        continue;
+                    }
+                    rSum += arr[rPointer];
+                    rPointer--;
+                }
+            }
+            Quick2P(ref arr, startIndex, lPointer - 1, lSum / (endIndex - startIndex + 1));
+            Quick2P(ref arr, rPointer, endIndex, rSum / (endIndex - startIndex));
+        }
+
+
     }
 }
