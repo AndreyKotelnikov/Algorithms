@@ -7,23 +7,32 @@ using System.Threading.Tasks;
 
 namespace Lesson_8
 {
+    /// <summary>
+    /// Класс для работы с разными методами сортировки и тестирования их производительности
+    /// </summary>
     class MySorts
     {
         public delegate void SortDelegate(ref int[] arr, int startIndex = 0, int endIndex = -10, int avarage = 0);
 
-        private List<int[]> arraysForTest;
-        private SortDelegate[] sortMethods;
-        private int[] time;
-        private int[] comparer;
-        private int[] swap;
+        private List<int[]> arraysForTest; //Хранит список эталнонных массивов, на которых будут тестироваться все сортировки
+        private SortDelegate[] sortMethods; //Хранит список методов, которые нужно протестировать
+        private int[] time; //Хранит время выполнения в миллисекундах по каждой сортировке при тестировании на масиве с максимальной длинной
+        private int[] comparer; //Хранит количество сравнений по каждой сортировке при тестировании на масиве с максимальной длинной
+        private int[] swap;  //Хранит количество свопов по каждой сортировке при тестировании на масиве с максимальной длинной
 
 
-        public static int CountOp { get; private set; }
-        public static int CountSwap { get; private set; }
-        public static DateTime StartTime { get; private set; }
-        public static DateTime FinishTime { get; private set; }
-        public int MaxNumberInArray { get; private set; }
+        public static int CountOp { get; private set; }  //Счётчик количества сравнений
+        public static int CountSwap { get; private set; }  //Счётчик количества свопов
+        public static DateTime StartTime { get; private set; }  //Время запуска метода при тестировании
+        public static DateTime FinishTime { get; private set; } //Время окончания работы метода при тестировании
+        public int MaxNumberInArray { get; private set; }  //Хранит количество элементов в максимально большом массиве, который используется для тестирования
 
+        /// <summary>
+        /// Конструктор класса: создаётся массивы для тестирования, на основании указанного количество элементов
+        /// Для тестирования используются 3 варианта массива: обычный со случайными числами, обратно отсортированный и отсортированный
+        /// </summary>
+        /// <param name="numberItemsInArrays">Количетво элементов в массивах для тестирования</param>
+        /// <param name="sortMethods">Список методов, которые нужно протестировать</param>
         public MySorts (int[] numberItemsInArrays, SortDelegate[] sortMethods)
         {
             this.sortMethods = sortMethods;
@@ -44,9 +53,19 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Реализует интерфейс Comparison<T> для обратной сортировки массива
+        /// </summary>
+        /// <param name="a">Первое число</param>
+        /// <param name="b">Второе число</param>
+        /// <returns>Результат сравнения: 1, -1, или 0</returns>
         int ReversComparer(int a, int b) => (a < b) ? 1 : ((a > b) ? -1 : 0);
         
-
+        /// <summary>
+        /// Создаёт новый массив и заполняет его случайными числами
+        /// </summary>
+        /// <param name="numberOfItems">Количество элементов в массиве</param>
+        /// <returns>Возвращает массив, заполненный случайными числами</returns>
         int[] CreateNewArray(int numberOfItems)
         {
             int[] arr = new int[numberOfItems];
@@ -58,6 +77,10 @@ namespace Lesson_8
             return arr;
         }
 
+        /// <summary>
+        /// Запускает процесс тестирования сортировок, выводит таблицу по работе каждого метода с каждым массивом.
+        /// Также заполняет данные в таблицы для проведения сравнительного анализа работы методов между собой.
+        /// </summary>
         public void TestSortes()
         {
             time = new int[3 * sortMethods.Length];
@@ -114,20 +137,31 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Выводит таблицы сравнительного анализа работы методов между собой по времени выполнения, кол-ву сравнений и свопов 
+        /// </summary>
         public void TestSortesСompareTable()
         {
             Console.WriteLine($"\n\nТаблица сравнения методов сортировки на массивах из {MaxNumberInArray} элементов:");
             Console.WriteLine("По времени выполнения (вычитаем время по столбцу из времени по строке)." +
                 "\nОтрицательное значение означает, что метод в строке работает быстрее, чем по столбцу:");
+            Console.WriteLine();
             OutPutTable(ref time, sortMethods);
-            Console.WriteLine("\nПо количеству сравнений (вычитаем время по столбцу из времени по строке)." +
+            Console.WriteLine("\n\nПо количеству сравнений (вычитаем время по столбцу из времени по строке)." +
                "\nОтрицательное значение означает, что метод в строке делает меньше сравнений, чем по столбцу:");
+            Console.WriteLine();
             OutPutTable(ref comparer, sortMethods);
-            Console.WriteLine("\nПо количеству свопов (вычитаем время по столбцу из времени по строке)." +
+            Console.WriteLine("\n\nПо количеству свопов (вычитаем время по столбцу из времени по строке)." +
                "\nОтрицательное значение означает, что метод в строке делает меньше свопов, чем по столбцу:");
+            Console.WriteLine();
             OutPutTable(ref swap, sortMethods);
         }
 
+        /// <summary>
+        /// Рассчитывает значения отклонений при сравнении каждого элемента массива с каждым элементом и выводит их в таблицу 
+        /// </summary>
+        /// <param name="arr">Массив для данными для рассчётов</param>
+        /// <param name="sortMethods">Список методов, для вывода их наименования в таблицу</param>
         private void OutPutTable(ref int[] arr, SortDelegate[] sortMethods)
         {
             Console.Write($"{"Методы", 10}| {"Тип", 9}| ");
@@ -167,6 +201,11 @@ namespace Lesson_8
 
         }
 
+        /// <summary>
+        /// Проверяет отсортирован ли массив и возвращает true, если он отсортирован, иначе false
+        /// </summary>
+        /// <param name="arr">Массив для проверки его отсортированности</param>
+        /// <returns>Возвращает true, если массив отсортирован, иначе false</returns>
         public bool CheckSortResult(ref int[] arr)
         {
             for (int i = 1; i < arr.Length; i++)
@@ -176,6 +215,13 @@ namespace Lesson_8
             return true;
         }
 
+        /// <summary>
+        /// Двоичный поиск в отсортированном бинарном дереве, который передаётся ввиде массива, 
+        /// где сыновья располагаются по индексам: левый i*2, правый i*2+1, относительно индекса родителя. 
+        /// </summary>
+        /// <param name="item">Элемент, который нужно найти в бинарном дереве</param>
+        /// <param name="arr">отсортированное бинарное дерево в виде массива</param>
+        /// <returns>Возвращает индекс элемента или -1, если не нашёл данный элемент</returns>
         public static int BinarySearch(int item, ref int[] arr)
         {
             CountOp = 0;
@@ -193,7 +239,13 @@ namespace Lesson_8
             return -1;
         }
 
-
+        /// <summary>
+        /// Шейкерная сортировка, или двунаправленная (англ. Cocktail sort) — разновидность пузырьковой сортировки
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="noUsed1">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed2">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed3">Не используется, нужен для приведения метода к общей сигнатуре</param>
         public static void Shaker(ref int[] arr, int noUsed1 = 0, int noUsed2 = 0, int noUsed3 = 0)
         {
             int flagSwap = 0;
@@ -223,6 +275,14 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Сортировка простыми обменами, сортиро́вка пузырько́м (англ. bubble sort) — простой алгоритм сортировки. 
+        /// Для понимания и реализации этот алгоритм — простейший, но эффективен он лишь для небольших массивов. 
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="noUsed1">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed2">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed3">Не используется, нужен для приведения метода к общей сигнатуре</param>
         public static void Buble(ref int[] arr, int noUsed1 = 0, int noUsed2 = 0, int noUsed3 = 0)
         {
             for (int i = 0; i < arr.Length; i++)
@@ -236,6 +296,13 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Оптимизированный алгоритм пузырьковой сортировки - убраны лишние проходы по массиву
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="noUsed1">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed2">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed3">Не используется, нужен для приведения метода к общей сигнатуре</param>
         public static void BublePlus(ref int[] arr, int noUsed1 = 0, int noUsed2 = 0, int noUsed3 = 0)
         {
             int flagSwap = 0;
@@ -263,6 +330,9 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Выводит значения в консоль по всем эталонным массивам, которые используются для тестирования сортировок
+        /// </summary>
         public void Print()
         {
             foreach (var arr in arraysForTest)
@@ -275,6 +345,10 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Выводит в консоль значения указанного массива
+        /// </summary>
+        /// <param name="arr">Массив для вывода его значений в консоль</param>
         public void Print(int[] arr)
         {
             foreach (var item in arr)
@@ -283,6 +357,15 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Быстрая сортировка, сортировка Хоара (англ. quicksort), часто называемая qsort.
+        /// Один из самых быстрых известных универсальных алгоритмов сортировки массивов: в среднем O(n*log n) обменов. 
+        /// Из-за наличия ряда недостатков на практике обычно используется с некоторыми доработками.
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="startIndex">Начальный индекс для сортировки</param>
+        /// <param name="endIndex">Конечный индекс для сортировки</param>
+        /// <param name="noUsed">Не используется, нужен для приведения метода к общей сигнатуре</param>
         public static void Quick(ref int[] arr, int startIndex = 0, int endIndex = -10, int noUsed = 0)
         {
             if (endIndex == -10) { endIndex = arr.Length - 1; }
@@ -293,7 +376,7 @@ namespace Lesson_8
             for (int i = startIndex; i <= endIndex; i++)
             {
                 CountOp++;
-                if (CountOp >= 45000000) { CountOp = -1; return; } 
+                if (CountOp >= 45000000) { CountOp = -1; return; } //Делаем прерывание вычислений, чтобы не получить ошибку "Out of Memory"
                 if (arr[i] <= pillar)
                 {
                     if (i == wall + 1)
@@ -314,6 +397,14 @@ namespace Lesson_8
             if (endIndex - wall > 0) { Quick(ref arr, wall + 1, endIndex); }
         }
 
+        /// <summary>
+        /// Доработанный алгоритм быстрой сортировки, где на каждом шаге считается среднее арифметическое значение по элементам
+        /// и далее оно используется для определения опорного значения.
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="startIndex">Начальный индекс для сортировки</param>
+        /// <param name="endIndex">Конечный индекс для сортировки</param>
+        /// <param name="avarage">Среднее значение элементов массива</param>
         public static void QuickAver(ref int[] arr, int startIndex = 0, int endIndex = -10, int avarage = 0)
         {
             if (endIndex == -10) { endIndex = arr.Length - 1; avarage = arr[endIndex]; }
@@ -326,7 +417,7 @@ namespace Lesson_8
             for (int i = startIndex; i <= endIndex; i++)
             {
                 CountOp++;
-                if (CountOp >= 50000000) { CountOp = -1; return; }
+                if (CountOp >= 50000000) { CountOp = -1; return; } //Делаем прерывание вычислений, чтобы не получить ошибку "Out of Memory"
                 if (arr[i] <= pillar)
                 {
                     if (i == wall + 1)
@@ -356,6 +447,15 @@ namespace Lesson_8
             }
         }
 
+        /// <summary>
+        /// Пирамидальная сортировка (англ. Heapsort, «Сортировка кучей») — алгоритм сортировки, работающий в худшем, 
+        /// в среднем и в лучшем случае (то есть гарантированно) за Θ(n log n) операций при сортировке n элементов. 
+        /// Количество применяемой служебной памяти не зависит от размера массива (то есть, O(1)).
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="noUsed1">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed2">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        /// <param name="noUsed3">Не используется, нужен для приведения метода к общей сигнатуре</param>
         public static void Heap(ref int[] arr, int noUsed1 = 0, int noUsed2 = 0, int noUsed3 = 0)
         {
             int endHeap = arr.Length - 1;
@@ -377,7 +477,15 @@ namespace Lesson_8
             }
         }
 
-        public static void Quick2P(ref int[] arr, int startIndex = 0, int endIndex = -10, int avarage = 0)
+        /// <summary>
+        /// Доработанная быстрая сортировка с использованием 2-х указателей, которые идут на встречу друг другу с концов массива
+        /// и делают свопы, если элемент у левого указателя больше опорного значения, а элемент у правого указателя меньше опорного значения.
+        /// </summary>
+        /// <param name="arr">Массив для сортировки</param>
+        /// <param name="startIndex">Начальный индекс для сортировки</param>
+        /// <param name="endIndex">Конечный индекс для сортировки</param>
+        /// <param name="noUsed">Не используется, нужен для приведения метода к общей сигнатуре</param>
+        public static void Quick2P(ref int[] arr, int startIndex = 0, int endIndex = -10, int noUsed = 0)
         {
             if (endIndex == -10) { endIndex = arr.Length - 1; }
             if (endIndex <= startIndex) { return; }
@@ -389,12 +497,7 @@ namespace Lesson_8
             while (lPointer < rPointer)
             {
                 CountOp++;
-                if(CountOp == 35000000)
-                {
-                    CountOp = -1;
-                    return;
-                }
-
+                if(CountOp == 35000000) { CountOp = -1; return; }  //Делаем прерывание вычислений, чтобы не получить ошибку "Out of Memory"
                 if (direction == 1)
                 {
                     if(arr[lPointer] > pillar)
@@ -424,7 +527,5 @@ namespace Lesson_8
             Quick2P(ref arr, startIndex, lPointer - 1);
             Quick2P(ref arr, rPointer, endIndex);
         }
-
-
     }
 }
