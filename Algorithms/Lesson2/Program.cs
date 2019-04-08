@@ -85,11 +85,11 @@ namespace Lesson2
             //4. **Найти все возможные способы разбиения N человек на M команд. Команды могут быть пустыми.
             //DivisionBy2Commands(3, 2);
             Console.WriteLine("\n\n4. **Найти все возможные способы разбиения N человек на M команд. Команды могут быть пустыми.");
-            int N = 7;
-            int M = 7;
+            int N = 3;
+            int M = 3;
             Console.WriteLine($"Выводим разбиение {N} человек по {M} командам:");
             countOp = 0;
-            DivisionByCommands(N, M, print: false);
+            DivisionByCommands(N, M);
             Console.WriteLine($"\nВсего получилось комбинаций: {countOp}");
             //Console.WriteLine(0<<3);
 
